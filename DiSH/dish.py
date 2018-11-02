@@ -1,16 +1,17 @@
+"""
 def SDist(p, q, wp, wq):
-    """
-    Subspace distance between p and q, with wp = w(p), wq = w(q)
-    """
+"""
+    #Subspace distance between p and q, with wp = w(p), wq = w(q)
+"""
     d1 = 0 # = lambda(p,q) + Delta(p,q)
     d2 = 0 # = Dist(p,q)  # distance in subspace defined by inverse of w(p,q)
     return (d1, d2)
 
 def ReachDist(p, q, r, wp, wq, wr):
-    """
-    subspace reachability. wp = w(p), wq = w(q), wr = w(r).
-    r is the µ-Nearest Neighbor of p
-    """
+"""
+    #subspace reachability. wp = w(p), wq = w(q), wr = w(r).
+    #r is the miu-Nearest Neighbor of p
+"""
     s1 = SDist(p, r, wp, wr)
     s2 = SDist(p, q, wp, wq)
     # s1 <= s2
@@ -19,7 +20,46 @@ def ReachDist(p, q, r, wp, wq, wr):
     # s1 > s2
     else:
         return s1
+"""
 
+def epsilonNeighborhood(featureData,epsi,miu):
+	#Array with index and Datavalue
+	features = [(x,y) for x,y in enumerate(featureData)]
+	#Sort the array by Datavalue
+	features.sort(key=lambda tup: tup[1])
+	
+	#create Dictonary with objects for this candidate Subspace
+	neighbourInfo = dict()
+	
+	for o in range(0,len(features)):
+		for i in range(max(0,o-miu),o+1):
+			#look at range query
+			if abs(features[o][1]-features[i][1]) <= epsi:
+				#add values to dict
+				if o in neighbourInfo.keys():
+					neighbourInfo[o].add(i)
+				else:
+					neighbourInfo[o] = {i}
+				
+				if i in neighbourInfo.keys():
+					neighbourInfo[i].add(o)
+				else:
+					neighbourInfo[i] = {o}
+					
+	return neighbourInfo
+			
+			
+def main():
+	test = [0,0.1,0.2,0.5,1.1,1.15,1.3,1.9,2,2.1]
+	epsi = .5
+	miu = 3
+	
+	d = epsilonNeighborhood(test,epsi,miu)
+	
+	print(d)
+
+if __name__ == '__main__':
+	main()
 
 """
 algorithm DiSH(D, m, e):
