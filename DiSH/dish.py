@@ -120,7 +120,7 @@ def bestSubspaceForDataPoint(neighborList, index, epsi, miu):
 
 
 def subspacePreference(subspace, numFeatures):
-    w = [1 if i in subspace else 0 for i in range(0, numFeatures)]
+    return [1 if i in subspace else 0 for i in range(0, numFeatures)]
 
 def dish(data, epsi, miu):
     numFeatures = data.shape[1]
@@ -128,8 +128,9 @@ def dish(data, epsi, miu):
     preferences = []
     for o in range(0, data.shape[0]):
         subspace = bestSubspaceForDataPoint(neighborList, o, epsi, miu)
-        preferences.append(subspacePreference(subspace, numFeatures))
-        print(o,":", preferences)
+        wo = subspacePreference(subspace, numFeatures)
+        preferences.append(wo)
+        print(o,":", wo)
 
 def testDish():
     data = np.array([[1.0,  3.0],
