@@ -1,4 +1,4 @@
-from random import shuffle
+import numpy as np
 
 """
 def SDist(p, q, wp, wq):
@@ -55,9 +55,10 @@ def epsilonNeighborhood(featureData,epsi,miu):
     
     #Trim dict s.t. only neighbourhoods with more than miu items remain
     #THEY SHALL PASS!!!!        
-    for key,val in neighbourInfo.items():
-        if len(val) < miu:
-            del neighbourInfo[key]
+    #for key,val in neighbourInfo.items():
+    #    if len(val) < miu:
+    #        del neighbourInfo[key]
+    neighbourInfo = { k:v for k,v in neighbourInfo.items() if len(v) >= miu }
                     
     return neighbourInfo
 
@@ -65,7 +66,7 @@ def computeAllNeighborhoods(data, epsi, miu):
     """
     Compute neighborhoods for all features. Returns a list of dicts.
     """
-    numFeatures = np.shape(data[0,:])
+    numFeatures = data.shape[1]
     neighborhood = []
     for f in range(0, numFeatures):
         neighborhood.append(epsilonNeighborhood(data[:,f], epsi, miu))
@@ -82,7 +83,7 @@ def bestSubspaceForDataPoint(neighborList, index, epsi, miu):
     # determine candidate attributes of the data point (1. step)
     candidates = set()
     for i in range(0, len(neighborList)):
-        if index in neighborlist[i]:
+        if index in neighborList[i]:
             candidates.add(i)
     # find attribute with greatest neighborhood, delete from candidates and add to subspace (2. step)
     maxSize = -1
@@ -92,11 +93,11 @@ def bestSubspaceForDataPoint(neighborList, index, epsi, miu):
             maxAttrib = ai
             maxSize = len(neighborList[ai][index])
     subspace.add(maxAttrib)
-    candidates = candidates - maxAttrib
+    candidates.remove(maxAttrib)
     # set current intersection (3.step)
     I = neighborList[maxAttrib][index]
     # 4./5. step
-    while not len(candidates):
+    while len(candidates):
         # find attribute with greatest neighborhood
         maxSize = -1
         maxAttrib = -1
@@ -111,7 +112,7 @@ def bestSubspaceForDataPoint(neighborList, index, epsi, miu):
         if len(maxIntersect) >= miu:
             subspace.add(maxAttrib)
             I = maxIntersect
-            candidates = candidates - maxAttrib
+            candidates.remove(maxAttrib)
         # 4.b
         else:
             break
@@ -121,17 +122,26 @@ def bestSubspaceForDataPoint(neighborList, index, epsi, miu):
 def subspacePreference(subspace, numFeatures):
     w = [1 if i in subspace else 0 for i in range(0, numFeatures)]
 
+def dish(data, epsi, miu):
+    numFeatures = data.shape[1]
+    neighborList = computeAllNeighborhoods(data, epsi, miu)
+    preferences = []
+    for o in range(0, data.shape[0]):
+        subspace = bestSubspaceForDataPoint(neighborList, o, epsi, miu)
+        preferences.append(subspacePreference(subspace, numFeatures))
+        print(o,":", preferences)
+
+def testDish():
+    data = np.array([[1.0,  3.0],
+                     [1.5,  0.0],
+                     [0.0,  3.5],
+                     [1.3, 10.0]])
+    epsi = 0.5
+    miu = 2
+    dish(data, epsi, miu)
 
 def main():
-    test = [0,0.1,0.2,0.5,1.1,1.15,1.3,1.9,2,2.1,5000,5000.1,5000.2]
-    shuffle(test)
-    print(test)
-    epsi = .5
-    miu = 3
-    
-    d = epsilonNeighborhood(test,epsi,miu)
-    
-    print(d)
+    testDish()
 
 if __name__ == '__main__':
     main()
