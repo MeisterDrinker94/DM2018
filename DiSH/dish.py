@@ -23,6 +23,11 @@ def ReachDist(p, q, r, wp, wq, wr):
 """
 
 def epsilonNeighborhood(featureData,epsi,miu):
+        """
+        Find the epsi-neighborhoods for each point along the dimension given
+        by the vector featureData. Neighborhoods with less than miu points
+        are excluded.
+        """
 	#Array with index and Datavalue
 	features = [(x,y) for x,y in enumerate(featureData)]
 	#Sort the array by Datavalue
