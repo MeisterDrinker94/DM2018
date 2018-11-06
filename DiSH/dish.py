@@ -1,3 +1,5 @@
+from random import shuffle
+
 """
 def SDist(p, q, wp, wq):
 """
@@ -37,25 +39,33 @@ def epsilonNeighborhood(featureData,epsi,miu):
 	neighbourInfo = dict()
 	
 	for o in range(0,len(features)):
-		for i in range(max(0,o-miu),o+1):
-			#look at range query
-			if abs(features[o][1]-features[i][1]) <= epsi:
-				#add values to dict
-				if o in neighbourInfo.keys():
-					neighbourInfo[o].add(i)
-				else:
-					neighbourInfo[o] = {i}
+		i = o
+		while(i >= 0 and abs(features[o][1]-features[i][1]) <= epsi):
+			#adds indices to dictonary
+			if features[o][0] in neighbourInfo.keys():
+				neighbourInfo[features[o][0]].add(features[i][0])
+			else:
+				neighbourInfo[features[o][0]] = {features[i][0]}
 				
-				if i in neighbourInfo.keys():
-					neighbourInfo[i].add(o)
-				else:
-					neighbourInfo[i] = {o}
+			if features[i][0] in neighbourInfo.keys():
+				neighbourInfo[features[i][0]].add(features[o][0])
+			else:
+				neighbourInfo[features[i][0]] = {features[o][0]}
+			i -= 1;
+	
+	#Trim dict s.t. only neighbourhoods with more than miu items remain
+	#THEY SHALL PASS!!!!		
+	for key,val in neighbourInfo.items():
+		if len(val) < miu:
+			del neighbourInfo[key]
 					
 	return neighbourInfo
 			
 			
 def main():
-	test = [0,0.1,0.2,0.5,1.1,1.15,1.3,1.9,2,2.1]
+	test = [0,0.1,0.2,0.5,1.1,1.15,1.3,1.9,2,2.1,5000,5000.1,5000.2]
+	shuffle(test)
+	print(test)
 	epsi = .5
 	miu = 3
 	
