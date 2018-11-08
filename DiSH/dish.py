@@ -1,9 +1,11 @@
+from heapq import heappush, heappop
+import math
 import numpy as np
 
 def SDist(p, q, wp, wq,epsi):
-"""
+    """
     #Subspace distance between p and q, with wp = w(p), wq = w(q)
-"""
+    """
     #Builds the common subspace preference vector by joining gigedy the two lists
     wpq = [int(wpi and wqi) for wpi,wqi in zip(wp,wq)]
     
@@ -12,8 +14,8 @@ def SDist(p, q, wp, wq,epsi):
 
     d1 = Lambda + Delta(p,q,wp,wq,wpq,epsi)
     
-    #creates the inverse of wqp
-    inwpq = [(1-x) for x in wqp]
+    #creates the inverse of wpq
+    invwpq = [(1-x) for x in wpq]
 
     d2 = distSubspace(p,q,invwpq)  # distance in subspace defined by inverse of w(p,q)
     
@@ -29,9 +31,9 @@ def Delta(p,q,wp,wq,wpq,epsi):
     return delta_p_q
 
 def distSubspace(p,q,wpq,pnorm=2):
-   """
-   Calculates a distance for two points in their subspace preference
-   """
+    """
+    Calculates a distance for two points in their subspace preference
+    """
     dist = 0
     
     for pi,qi,wpqi in zip(p,q,wpq):
@@ -39,16 +41,16 @@ def distSubspace(p,q,wpq,pnorm=2):
             dist += abs(pi-qi)**pnorm
 
 
-    return norm**(1/pnorm)
+    return dist**(1/pnorm)
 
-def ReachDist(p, q, r, wp, wq, wr):
-"""
+def ReachDist(p, q, r, wp, wq, wr, epsi):
+    """
     #subspace reachability. wp = w(p), wq = w(q), wr = w(r).
     #r is the miu-Nearest Neighbor of p
-"""
-    s1 = SDist(p, r, wp, wr)
-    s2 = SDist(p, q, wp, wq)
-    s1 <= s2
+    """
+    s1 = SDist(p, r, wp, wr, epsi)
+    s2 = SDist(p, q, wp, wq, epsi)
+    # s1 <= s2
     if s1[0] < s2[0] or (s1[0] == s2[0] and s1[1] <= s2[1]):
         return s2
     # s1 > s2
@@ -173,11 +175,13 @@ def subspacePreference(subspace, numFeatures):
     return [1 if i in subspace else 0 for i in range(0, numFeatures)]
 
 def dish(data, epsi, miu):
+    clusterOrder = []
     # precompute all epsi-neighborhoods with more than miu points
     numFeatures = data.shape[1]
     neighborList = computeAllNeighborhoods(data, epsi, miu)
     # find subspace preference vectors for each point
     preferences = []
+    pq = [] # empty priority queue
     for o in range(0, data.shape[0]):
         subspace = bestSubspaceForDataPoint(neighborList, o, epsi, miu)
         print("subspace:", subspace)
@@ -185,7 +189,13 @@ def dish(data, epsi, miu):
         preferences.append(wo)
         heappush(pq, (math.inf, o))
     while pq:
-        break
+        o = heappop(pq)
+        r = 1 # TODO: nearest neighbor
+        for idx, p in enumerate(pq):
+            newSr = ReachDist(data[o[1],:], data[p[1],:], data[r,:], preferences[o[1]], preferences[p[1]], preferences[r], epsi)
+            pq[idx] = (newSr, p[1])
+        clusterOrder.append(o[1])
+    return clusterOrder
 
 def testDish():
     data = np.array([[1.0,  3.0],
@@ -194,7 +204,7 @@ def testDish():
                      [1.3, 10.0]])
     epsi = 0.5
     miu = 2
-    dish(data, epsi, miu)
+    print(dish(data, epsi, miu))
 
 def main():
     testDish()
