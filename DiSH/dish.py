@@ -157,7 +157,7 @@ def miuNearestNeighbor(indexP, data, preferences, epsi, miu):
     """
     neighboorsDistance = []
 
-    for i in range(len(data(:,0)):
+    for i in range(data.shape[0]):
             q = data(i,:)
             wq = preferences[i]
             p = data(indexP)
