@@ -161,7 +161,7 @@ def miuNearestNeighbor(indexP, data, preferences, epsi, miu):
             q = data[i,:]
             wq = preferences[i]
             p = data[indexP,:]
-            wp = prefrences[indexP]
+            wp = preferences[indexP]
             d = SDist(p,q,wp,wq,epsi)
             neighboorsDistance.append((d,i))
     
