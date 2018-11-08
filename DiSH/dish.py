@@ -158,12 +158,12 @@ def miuNearestNeighbor(indexP, data, preferences, epsi, miu):
     neighboorsDistance = []
 
     for i in range(data.shape[0]):
-            q = data(i,:)
+            q = data[i,:]
             wq = preferences[i]
-            p = data(indexP)
-            wp = prefrences(indexP)
+            p = data[indexP,:]
+            wp = prefrences[indexP]
             d = SDist(p,q,wp,wq,epsi)
-            neighboorsDistance.append({d,i})
+            neighboorsDistance.append((d,i))
     
     #Sort all neigboors to size
     neighboorsDistance.sort()
