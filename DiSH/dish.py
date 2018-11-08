@@ -171,7 +171,7 @@ def dish(data, epsi, miu):
         preferences.append(wo)
         heappush(pq, (math.inf, o))
     while pq:
-        pass
+        break
 
 def testDish():
     data = np.array([[1.0,  3.0],
