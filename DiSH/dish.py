@@ -164,7 +164,9 @@ def dish(data, epsi, miu):
         print("subspace:", subspace)
         wo = subspacePreference(subspace, numFeatures)
         preferences.append(wo)
-        print(o,":", wo)
+        heappush(pq, (math.inf, o))
+    while pq:
+        break
 
 def testDish():
     data = np.array([[1.0,  3.0],
