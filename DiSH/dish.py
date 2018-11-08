@@ -1,7 +1,4 @@
-from heapq import heappush
-import math
 import numpy as np
-
 
 def SDist(p, q, wp, wq,epsi):
 """
@@ -44,7 +41,6 @@ def distSubspace(p,q,wpq,pnorm=2):
 
     return norm**(1/pnorm)
 
-"""   
 def ReachDist(p, q, r, wp, wq, wr):
 """
     #subspace reachability. wp = w(p), wq = w(q), wr = w(r).
@@ -52,13 +48,12 @@ def ReachDist(p, q, r, wp, wq, wr):
 """
     s1 = SDist(p, r, wp, wr)
     s2 = SDist(p, q, wp, wq)
-    # s1 <= s2
+    s1 <= s2
     if s1[0] < s2[0] or (s1[0] == s2[0] and s1[1] <= s2[1]):
         return s2
     # s1 > s2
     else:
         return s1
-"""
 
 def epsilonNeighborhood(featureData,epsi,miu):
     """
@@ -164,20 +159,18 @@ def dish(data, epsi, miu):
     neighborList = computeAllNeighborhoods(data, epsi, miu)
     # find subspace preference vectors for each point
     preferences = []
-    pq = [] # empty priority queue
     for o in range(0, data.shape[0]):
         subspace = bestSubspaceForDataPoint(neighborList, o, epsi, miu)
+        print("subspace:", subspace)
         wo = subspacePreference(subspace, numFeatures)
         preferences.append(wo)
-        heappush(pq, (math.inf, o))
-
-
+        print(o,":", wo)
 
 def testDish():
     data = np.array([[1.0,  3.0],
                      [1.5,  0.0],
                      [0.0,  3.5],
-                     [1.3,  3.0]])
+                     [1.3, 10.0]])
     epsi = 0.5
     miu = 2
     dish(data, epsi, miu)
