@@ -123,11 +123,14 @@ def subspacePreference(subspace, numFeatures):
     return [1 if i in subspace else 0 for i in range(0, numFeatures)]
 
 def dish(data, epsi, miu):
+    # precompute all epsi-neighborhoods with more than miu points
     numFeatures = data.shape[1]
     neighborList = computeAllNeighborhoods(data, epsi, miu)
+    # find subspace preference vectors for each point
     preferences = []
     for o in range(0, data.shape[0]):
         subspace = bestSubspaceForDataPoint(neighborList, o, epsi, miu)
+        print("subspace:", subspace)
         wo = subspacePreference(subspace, numFeatures)
         preferences.append(wo)
         print(o,":", wo)
