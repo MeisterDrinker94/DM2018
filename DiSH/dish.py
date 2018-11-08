@@ -168,7 +168,7 @@ def miuNearestNeighbor(indexP, data, preferences, epsi, miu):
     #Sort all neigboors to size
     neighboorsDistance.sort()
 
-    return neighboorsDistance[miu]
+    return neighboorsDistance[miu][1]
     
 
 def subspacePreference(subspace, numFeatures):
@@ -190,7 +190,7 @@ def dish(data, epsi, miu):
         heappush(pq, (math.inf, o))
     while pq:
         o = heappop(pq)
-        r = 1 # TODO: nearest neighbor
+        r = miuNeearestNeighbor # TODO: nearest neighbor
         for idx, p in enumerate(pq):
             newSr = ReachDist(data[o[1],:], data[p[1],:], data[r,:], preferences[o[1]], preferences[p[1]], preferences[r], epsi)
             pq[idx] = (newSr, p[1])
