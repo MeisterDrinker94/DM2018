@@ -1,3 +1,5 @@
+from heapq import heappush
+import math
 import numpy as np
 
 """
@@ -128,18 +130,20 @@ def dish(data, epsi, miu):
     neighborList = computeAllNeighborhoods(data, epsi, miu)
     # find subspace preference vectors for each point
     preferences = []
+    pq = [] # empty priority queue
     for o in range(0, data.shape[0]):
         subspace = bestSubspaceForDataPoint(neighborList, o, epsi, miu)
-        print("subspace:", subspace)
         wo = subspacePreference(subspace, numFeatures)
         preferences.append(wo)
-        print(o,":", wo)
+        heappush(pq, (math.inf, o))
+
+
 
 def testDish():
     data = np.array([[1.0,  3.0],
                      [1.5,  0.0],
                      [0.0,  3.5],
-                     [1.3, 10.0]])
+                     [1.3,  3.0]])
     epsi = 0.5
     miu = 2
     dish(data, epsi, miu)
