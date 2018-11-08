@@ -1,14 +1,48 @@
 import numpy as np
 
-"""
-def SDist(p, q, wp, wq):
+
+def SDist(p, q, wp, wq,epsi):
 """
     #Subspace distance between p and q, with wp = w(p), wq = w(q)
 """
-    d1 = 0 # = lambda(p,q) + Delta(p,q)
-    d2 = 0 # = Dist(p,q)  # distance in subspace defined by inverse of w(p,q)
+    #Builds the common subspace preference vector by joining gigedy the two lists
+    wpq = [int(wpi and wqi) for wpi,wqi in zip(wp,wq)]
+    
+    #Lambda = the amounts of zeros in wpq
+    Lambda = len(wpq) - sum(wpq)
+
+    d1 = Lambda + Delta(p,q,wp,wq,wpq,epsi)
+    
+    #creates the inverse of wqp
+    inwpq = [(1-x) for x in wqp]
+
+    d2 = distSubspace(p,q,invwpq)  # distance in subspace defined by inverse of w(p,q)
+    
     return (d1, d2)
 
+def Delta(p,q,wp,wq,wpq,epsi):
+    #return value
+    delta_p_q = 0
+
+    if (wpq == wp or wpq == wq) and distSubspace(p,q,wpq) > 2*epsi:
+        delta_p_q = 1
+
+    return delta_p_q
+
+def distSubspace(p,q,wpq,pnorm=2):
+   """
+   Calculates a distance for two points in their subspace preference
+   """
+    dist = 0
+    
+    for pi,qi,wpqi in zip(p,q,wpq):
+        if wpqi == 1:
+            dist += abs(pi-qi)**pnorm
+
+
+    return norm**(1/pnorm)
+
+"""   
 def ReachDist(p, q, r, wp, wq, wr):
 """
     #subspace reachability. wp = w(p), wq = w(q), wr = w(r).
