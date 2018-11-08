@@ -184,7 +184,6 @@ def dish(data, epsi, miu):
     pq = [] # empty priority queue
     for o in range(0, data.shape[0]):
         subspace = bestSubspaceForDataPoint(neighborList, o, epsi, miu)
-        print("subspace:", subspace)
         wo = subspacePreference(subspace, numFeatures)
         preferences.append(wo)
         heappush(pq, (math.inf, o))
