@@ -149,6 +149,25 @@ def bestSubspaceForDataPoint(neighborList, index, epsi, miu):
             break
     return subspace
 
+def miuNearestNeighbor(indexP, data, preferences, epsi, miu):
+    """
+    Calculate the miu neareset neighboor for point p in respect to SDist
+    """
+    neighboorsDistance = []
+
+    for i in range(len(data(:,0)):
+            q = data(i,:)
+            wq = preferences[i]
+            p = data(indexP)
+            wp = prefrences(indexP)
+            d = SDist(p,q,wp,wq,epsi)
+            neighboorsDistance.append({d,i})
+    
+    #Sort all neigboors to size
+    neighboorsDistance.sort()
+
+    return neighboorsDistance[miu]
+    
 
 def subspacePreference(subspace, numFeatures):
     return [1 if i in subspace else 0 for i in range(0, numFeatures)]
