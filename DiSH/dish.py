@@ -1,6 +1,8 @@
 from heapq import heappush, heappop
 import math
 import numpy as np
+from SyntheticData import createSynthetic
+import sys
 
 def SDist(p, q, wp, wq,epsi):
     """
@@ -182,11 +184,15 @@ def dish(data, epsi, miu):
     # find subspace preference vectors for each point
     preferences = []
     pq = [] # empty priority queue
+    print("Compute subspace preferences")
+    sys.stdout.flush()
     for o in range(0, data.shape[0]):
         subspace = bestSubspaceForDataPoint(neighborList, o, epsi, miu)
         wo = subspacePreference(subspace, numFeatures)
         preferences.append(wo)
         heappush(pq, (math.inf, o))
+    print("Compute cluster order")
+    sys.stdout.flush()
     while pq:
         o = heappop(pq)
         r = miuNearestNeighbor(o[1],data,preferences,epsi,miu) # TODO: nearest neighbor
@@ -203,6 +209,9 @@ def testDish():
                      [1.3, 10.0]])
     epsi = 0.5
     miu = 2
+    data = createSynthetic()
+    epsi = 0.1
+    miu = 10
     print(dish(data, epsi, miu))
 
 def main():
