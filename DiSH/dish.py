@@ -213,7 +213,39 @@ def testDish():
     epsi = 0.1
     miu = 10
     order, prefs = dish(data, epsi, miu)
-    print(order)
+    print(extractCluster(order,prefs,data,epsi))
+
+def extractCluster(clusterOrder,preferences,Data, epsi):
+    """
+        Creates the according clusters w.r.t. the cluster order
+    """
+    print("extracting Clusters \n")
+    cl = []
+    #cluster with points,preference Vector, center
+    cl.append([[clusterOrder[0]],preferences[0],Data[clusterOrder[0],:]])
+    
+    for i in range(1,len(clusterOrder)):
+        indexo = clusterOrder[i]
+        p = clusterOrder[i-1]
+
+        foundCluster = False
+
+        for c in cl:
+            wc = c[1]
+            wop = [int(woi and wpi) for woi,wpi in zip(preferences[indexo],preferences[p])]
+            if wc == wop and distSubspace(Data[indexo,:],c[2]/len(c[0]),wop)/2<=epsi:
+                c[0].append(indexo)
+                c[2] = c[2] + Data[indexo,:]
+                foundCluster = True
+                break
+            
+        if not foundCluster:
+            cl.append([[indexo],preferences[indexo],Data[indexo,:]])
+
+    return cl
+
+def buildHierchy():
+    pass 
 
 def main():
     testDish()
