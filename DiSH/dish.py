@@ -233,9 +233,9 @@ def extractCluster(clusterOrder,preferences,Data, epsi):
         for c in cl:
             wc = c[1]
             wop = [int(woi and wpi) for woi,wpi in zip(preferences[indexo],preferences[p])]
-            if wc == wop and distSubspace(Data[indexo,:],c[2]/len(c[0]),wop)/2<=epsi:
+            if wc == wop and distSubspace(Data[indexo,:],c[2],wop)/2<=epsi:
                 c[0].append(indexo)
-                c[2] = c[2] + Data[indexo,:]
+                c[2] = (c[2] + Data[indexo,:])/len(c[0])
                 foundCluster = True
                 break
             
@@ -244,8 +244,20 @@ def extractCluster(clusterOrder,preferences,Data, epsi):
 
     return cl
 
-def buildHierchy():
-    pass 
+def buildHierchy(clusters, epsi):
+    #dimensionality of the cluster
+    d = len(cluster[2])
+      
+    for ci in clusters:
+        lambdaci = len(ci[1])-sum(ci[1])
+        for cj in clusters:
+            lambdacj = len(cj[1])-sum(cj[1])
+            
+            if lambdaci > lambdacj:
+                wij = [int(wix and wjx) for wix,wjx in zip(ci[1],cj[1])]
+                d = distSubspace(ci[2],cj[2],ci[1],cj[1])
+                
+                if lambdacj == d or (d < 2*epsi) )     
 
 def main():
     testDish()
