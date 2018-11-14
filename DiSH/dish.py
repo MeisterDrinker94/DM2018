@@ -200,7 +200,7 @@ def dish(data, epsi, miu):
             newSr = ReachDist(data[o[1],:], data[p[1],:], data[r,:], preferences[o[1]], preferences[p[1]], preferences[r], epsi)
             pq[idx] = (newSr, p[1])
         clusterOrder.append(o[1])
-    return clusterOrder
+    return clusterOrder, preferences
 
 def testDish():
     data = np.array([[1.0,  3.0],
@@ -212,7 +212,8 @@ def testDish():
     data = createSynthetic()
     epsi = 0.1
     miu = 10
-    print(dish(data, epsi, miu))
+    order, prefs = dish(data, epsi, miu)
+    print(order)
 
 def main():
     testDish()
