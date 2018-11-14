@@ -120,6 +120,9 @@ def bestSubspaceForDataPoint(neighborList, index, epsi, miu):
     for i in range(0, len(neighborList)):
         if index in neighborList[i]:
             candidates.add(i)
+    # no candidate attributes, no best subspace
+    if not candidates:
+        return set()
     # find attribute with greatest neighborhood, delete from candidates and add to subspace (2. step)
     maxSize = -1
     maxAttrib = -1
@@ -210,7 +213,7 @@ def testDish():
     epsi = 0.5
     miu = 2
     data = createSynthetic()
-    epsi = 0.1
+    epsi = 0.001
     miu = 10
     order, prefs = dish(data, epsi, miu)
     print(extractCluster(order,prefs,data,epsi))
