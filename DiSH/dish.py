@@ -1,4 +1,4 @@
-from heapq import heappush, heappop
+from heapq import heappush, heappop, heapify
 import math
 import numpy as np
 from SyntheticData import createSynthetic
@@ -55,6 +55,7 @@ def ReachDist(p, q, r, wp, wq, wr, epsi):
     s1 = SDist(p, r, wp, wr, epsi)
     s2 = SDist(p, q, wp, wq, epsi)
     # s1 <= s2
+    return max(s1,s2)
     if s1[0] < s2[0] or (s1[0] == s2[0] and s1[1] <= s2[1]):
         return s2
     # s1 > s2
@@ -175,7 +176,7 @@ def miuNearestNeighbor(indexP, data, preferences, epsi, miu):
     #Sort all neigboors to size
     neighboorsDistance.sort()
 
-    return neighboorsDistance[miu][1]
+    return neighboorsDistance[miu-1][1]
     
 
 def subspacePreference(subspace, numFeatures):
@@ -194,8 +195,9 @@ def dish(data, epsi, miu):
     for o in range(0, data.shape[0]):
         subspace = bestSubspaceForDataPoint(neighborList, o, epsi, miu)
         wo = subspacePreference(subspace, numFeatures)
+        print("Print preferences of o,", o, wo)
         preferences.append(wo)
-        heappush(pq, (math.inf, o))
+        heappush(pq, ((math.inf,math.inf), o))
     print("Compute cluster order")
     sys.stdout.flush()
     while pq:
@@ -204,6 +206,7 @@ def dish(data, epsi, miu):
         for idx, p in enumerate(pq):
             newSr = ReachDist(data[o[1],:], data[p[1],:], data[r,:], preferences[o[1]], preferences[p[1]], preferences[r], epsi)
             pq[idx] = (newSr, p[1])
+            heapify(pq)
         clusterOrder.append(o[1])
     return clusterOrder, preferences
 
@@ -229,15 +232,19 @@ def extractCluster(clusterOrder,preferences,Data, epsi):
         for c in clusters:
             wc = c[1]
             wop = [int(woi and wpi) for woi,wpi in zip(preferences[oIdx],preferences[pIdx])]
-            if wc == wop and distSubspace(Data[oIdx,:], c[2], wop) <= 2*epsi:
+            if wc == wop and distSubspace(Data[oIdx,:], c[2]/len(c[0]), wop) <= 2*epsi:
                 c[0].append(oIdx)
-                c[2] = (c[2] + Data[oIdx,:])/len(c[0])
+                c[2] = (c[2] + Data[oIdx,:])
                 foundCluster = True
 #                break                
             
         if not foundCluster:
             clusters.append([[oIdx],preferences[oIdx],Data[oIdx,:]])
-
+    
+    #update the cluster centers
+    for c in clusters:
+        c[2] = c[2]/len(c[0])
+    
     return clusters
 
 def buildHierarchy(clusters, epsi):
@@ -280,15 +287,22 @@ def testDish():
 #                     [1.3,  3.0],
 #                     [1.2,  3.1]])
     data = createSynthetic(noisePoints=0)
-    epsi = 0.5 
-    miu = 5
+    data = np.array([[0,0,0],
+                    [0.25,0,0],
+                    [0.5,0,0],
+                    [0,1,1],
+                    [.5,1,1],
+                    [1,1,1]])
+    epsi = 0.3 
+    miu = 3
     order, prefs = dish(data, epsi, miu)
+    print("Cluster Order", order)
     clusters = extractCluster(order,prefs,data,epsi)
     hierarchy = buildHierarchy(clusters, epsi)
-    print("parentDict:", hierarchy)
+    #print("parentDict:", hierarchy)
     print("len(parentDict):", len(hierarchy))
     print("len(clusters):", len(clusters))
-    print("clusters:", clusters)
+    #print("clusters:", clusters)
     plotData(clusters,data)
 
 def plotData(clusters, Data):
@@ -305,7 +319,8 @@ def plotData(clusters, Data):
             break
         for dindex in c[0]:
             ax.scatter(Data[dindex,0],Data[dindex,1],Data[dindex,2], color=markerStyle[col])
-    
+    plt.xlabel("x-label")
+    plt.ylabel("y-label")
     plt.show()
 
 def main():
