@@ -222,39 +222,38 @@ def extractCluster(clusterOrder,preferences,Data, epsi):
     clusters.append([[clusterOrder[0]],preferences[0],Data[clusterOrder[0],:]])
     
     for i in range(1,len(clusterOrder)):
-        indexo = clusterOrder[i]
-        p = clusterOrder[i-1]
+        oIdx = clusterOrder[i]
+        pIdx = clusterOrder[i-1]
 
         foundCluster = False
-
         for c in clusters:
             wc = c[1]
-            wop = [int(woi and wpi) for woi,wpi in zip(preferences[indexo],preferences[p])]
-            if wc == wop and distSubspace(Data[indexo,:],c[2],wop)/2<=epsi:
-                c[0].append(indexo)
-                c[2] = (c[2] + Data[indexo,:])/len(c[0])
+            wop = [int(woi and wpi) for woi,wpi in zip(preferences[oIdx],preferences[pIdx])]
+            if wc == wop and distSubspace(Data[oIdx,:], c[2], wop) <= 2*epsi:
+                c[0].append(oIdx)
+                c[2] = (c[2] + Data[oIdx,:])/len(c[0])
                 foundCluster = True
-                break
+#                break                
             
         if not foundCluster:
-            clusters.append([[indexo],preferences[indexo],Data[indexo,:]])
+            clusters.append([[oIdx],preferences[oIdx],Data[oIdx,:]])
 
     return clusters
 
 def buildHierarchy(clusters, epsi):
-    #dimensionality of the cluster
-    d = len(clusters[0][2])
+    # dimensionality of the cluster
+    dim = len(clusters[0][2])
 
     # dictionary of clusters and their parents
     parentDict = {}
-      
+     
     for ciIdx, ci in enumerate(clusters):
         lambdaci = len(ci[1])-sum(ci[1])
         for cjIdx, cj in enumerate(clusters):
             lambdacj = len(cj[1])-sum(cj[1])
             if lambdacj > lambdaci:
                 wij = [int(wix and wjx) for wix,wjx in zip(ci[1],cj[1])]
-                d = distSubspace(ci[2],cj[2],wij)
+                dist = distSubspace(ci[2],cj[2],wij)
                 
                 # Check if there is a cluster that is a parent of ci
                 # and has lower dimensionality lambda
@@ -266,7 +265,7 @@ def buildHierarchy(clusters, epsi):
                             ciHasParents = True
                             break
 
-                if lambdacj == d or (d <= 2*epsi and not ciHasParents):
+                if lambdacj == dim or (dist <= 2*epsi and not ciHasParents):
                     if cjIdx in parentDict.keys():
                         parentDict[cjIdx].append(ciIdx)
                     else:
@@ -281,8 +280,8 @@ def testDish():
 #                     [1.3,  3.0],
 #                     [1.2,  3.1]])
     data = createSynthetic(noisePoints=0)
-    epsi = 0.2 
-    miu = 1
+    epsi = 0.5 
+    miu = 5
     order, prefs = dish(data, epsi, miu)
     clusters = extractCluster(order,prefs,data,epsi)
     hierarchy = buildHierarchy(clusters, epsi)
