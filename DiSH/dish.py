@@ -205,22 +205,13 @@ def dish(data, epsi, miu):
         clusterOrder.append(o[1])
     return clusterOrder, preferences
 
-def testDish():
-    data = np.array([[1.0,  3.0],
-                     [1.5,  0.0],
-                     [0.0,  3.5],
-                     [1.3, 10.0]])
-    epsi = 0.5
-    miu = 2
-    data = createSynthetic()
-    epsi = 0.001
-    miu = 10
-    order, prefs = dish(data, epsi, miu)
-    print(extractCluster(order,prefs,data,epsi))
-
 def extractCluster(clusterOrder,preferences,Data, epsi):
     """
         Creates the according clusters w.r.t. the cluster order
+        Returns a list of lists, where
+            clusters[i][0] are the points in cluster i
+            clusters[i][1] is the preference vector
+            clusters[i][2] is the centroid
     """
     print("extracting Clusters \n")
     cl = []
@@ -247,20 +238,52 @@ def extractCluster(clusterOrder,preferences,Data, epsi):
 
     return cl
 
-def buildHierchy(clusters, epsi):
+def buildHierarchy(clusters, epsi):
     #dimensionality of the cluster
-    d = len(cluster[2])
+    d = len(clusters[0][2])
+
+    # dictionary of clusters and their parents
+    parentDict = {}
       
-    for ci in clusters:
+    for ciIdx, ci in enumerate(clusters):
         lambdaci = len(ci[1])-sum(ci[1])
-        for cj in clusters:
+        for cjIdx, cj in enumerate(clusters):
             lambdacj = len(cj[1])-sum(cj[1])
-            
-            if lambdaci > lambdacj:
+            if lambdacj > lambdaci:
                 wij = [int(wix and wjx) for wix,wjx in zip(ci[1],cj[1])]
-                d = distSubspace(ci[2],cj[2],ci[1],cj[1])
+                d = distSubspace(ci[2],cj[2],wij)
                 
-                if lambdacj == d or (d < 2*epsi) )     
+                # Check if there is a cluster that is a parent of ci
+                # and has lower dimensionality lambda
+                ciHasParents = False
+                if ciIdx in parentDict.keys():
+                    for c in parentDict[ciIdx]:
+                        lambdac = len(clusters[c][1]) - sum(clusters[c][1])
+                        if lambdac < lambdacj:
+                            ciHasParents = True
+                            break
+
+                if lambdacj == d or (d <= 2*epsi and not ciHasParents):
+                    if cjIdx in parentDict.keys():
+                        parentDict[cjIdx].append(ciIdx)
+                    else:
+                        parentDict[cjIdx] = [ciIdx]
+    return parentDict
+
+
+def testDish():
+    data = np.array([[1.0,  3.0],
+                     [1.5,  0.0],
+                     [0.0,  3.5],
+                     [1.3, 10.0]])
+    data = createSynthetic(noisePoints=0)
+    epsi = 0.1
+    miu = 10
+    order, prefs = dish(data, epsi, miu)
+    clusters = extractCluster(order,prefs,data,epsi)
+    hierarchy = buildHierarchy(clusters, epsi)
+    print(hierarchy)
+    print(len(hierarchy))
 
 def main():
     testDish()
