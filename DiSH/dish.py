@@ -200,7 +200,7 @@ def dish(data, epsi, miu):
     sys.stdout.flush()
     while pq:
         o = heappop(pq)
-        r = miuNearestNeighbor(o[1],data,preferences,epsi,miu) # TODO: nearest neighbor
+        r = miuNearestNeighbor(o[1],data,preferences,epsi,miu)
         for idx, p in enumerate(pq):
             newSr = ReachDist(data[o[1],:], data[p[1],:], data[r,:], preferences[o[1]], preferences[p[1]], preferences[r], epsi)
             pq[idx] = (newSr, p[1])
@@ -215,10 +215,11 @@ def extractCluster(clusterOrder,preferences,Data, epsi):
             clusters[i][1] is the preference vector
             clusters[i][2] is the centroid
     """
-    print("extracting Clusters \n")
-    cl = []
-    #cluster with points,preference Vector, center
-    cl.append([[clusterOrder[0]],preferences[0],Data[clusterOrder[0],:]])
+    print("extracting Clusters")
+    sys.stdout.flush()
+    clusters = []
+    # clusters with points, preference Vector, center
+    clusters.append([[clusterOrder[0]],preferences[0],Data[clusterOrder[0],:]])
     
     for i in range(1,len(clusterOrder)):
         indexo = clusterOrder[i]
@@ -226,7 +227,7 @@ def extractCluster(clusterOrder,preferences,Data, epsi):
 
         foundCluster = False
 
-        for c in cl:
+        for c in clusters:
             wc = c[1]
             wop = [int(woi and wpi) for woi,wpi in zip(preferences[indexo],preferences[p])]
             if wc == wop and distSubspace(Data[indexo,:],c[2],wop)/2<=epsi:
@@ -236,9 +237,9 @@ def extractCluster(clusterOrder,preferences,Data, epsi):
                 break
             
         if not foundCluster:
-            cl.append([[indexo],preferences[indexo],Data[indexo,:]])
+            clusters.append([[indexo],preferences[indexo],Data[indexo,:]])
 
-    return cl
+    return clusters
 
 def buildHierarchy(clusters, epsi):
     #dimensionality of the cluster
@@ -274,20 +275,21 @@ def buildHierarchy(clusters, epsi):
 
 
 def testDish():
-    data = np.array([[1.0,  3.0],
-                     [1.5,  0.0],
-                     [0.0,  3.5],
-                     [1.3, 10.0]])
+#    data = np.array([[1.0,  3.0],
+#                     [1.5,  0.0],
+#                     [0.0,  3.5],
+#                     [1.3,  3.0],
+#                     [1.2,  3.1]])
     data = createSynthetic(noisePoints=0)
-    epsi = 0.1
+    epsi = 0.2 
     miu = 1
     order, prefs = dish(data, epsi, miu)
     clusters = extractCluster(order,prefs,data,epsi)
     hierarchy = buildHierarchy(clusters, epsi)
-    print(hierarchy)
-    print(len(hierarchy))
-    print(len(clusters))
-    print(len(data[0]
+    print("parentDict:", hierarchy)
+    print("len(parentDict):", len(hierarchy))
+    print("len(clusters):", len(clusters))
+    print("clusters:", clusters)
     plotData(clusters,data)
 
 def plotData(clusters, Data):
@@ -295,15 +297,15 @@ def plotData(clusters, Data):
     
     ax = fig.add_subplot(111, projection='3d')
     
-    cluster_design = ['r.','b.','g.','y.','ro','bo','go']
-       
+    markerStyle = ['g','r','b','y','m']
+    
+    col = -1
     for c in clusters:
-        col = 0
+        col = col + 1
         if col == 5:
             break
         for dindex in c[0]:
-            ax.scatter3D(Data[dindex,0],Data[dindex,1],Data[dindex,2], cmap = cluster_design)
-        col += 1
+            ax.scatter(Data[dindex,0],Data[dindex,1],Data[dindex,2], color=markerStyle[col])
     
     plt.show()
 
