@@ -3,6 +3,8 @@ import math
 import numpy as np
 from SyntheticData import createSynthetic
 import sys
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
 
 def SDist(p, q, wp, wq,epsi):
     """
@@ -278,12 +280,32 @@ def testDish():
                      [1.3, 10.0]])
     data = createSynthetic(noisePoints=0)
     epsi = 0.1
-    miu = 10
+    miu = 1
     order, prefs = dish(data, epsi, miu)
     clusters = extractCluster(order,prefs,data,epsi)
     hierarchy = buildHierarchy(clusters, epsi)
     print(hierarchy)
     print(len(hierarchy))
+    print(len(clusters))
+    print(len(data[0]
+    plotData(clusters,data)
+
+def plotData(clusters, Data):
+    fig = plt.figure()
+    
+    ax = fig.add_subplot(111, projection='3d')
+    
+    cluster_design = ['r.','b.','g.','y.','ro','bo','go']
+       
+    for c in clusters:
+        col = 0
+        if col == 5:
+            break
+        for dindex in c[0]:
+            ax.scatter3D(Data[dindex,0],Data[dindex,1],Data[dindex,2], cmap = cluster_design)
+        col += 1
+    
+    plt.show()
 
 def main():
     testDish()
