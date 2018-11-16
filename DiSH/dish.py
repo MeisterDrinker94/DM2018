@@ -316,7 +316,7 @@ def testDish():
 #                     [0.0,  3.5],
 #                     [1.3,  3.0],
 #                     [1.2,  3.1]])
-    data = createSynthetic(noisePoints=0)
+    data = createSynthetic(noisePoints=50)
 #    data = np.array([
 #                    [0.5,0,0],
 #                    [0,0,0],
@@ -330,7 +330,7 @@ def testDish():
 #        for row in reader:
 #            data.append(row[1:])
 #    data = np.array(data, dtype=np.float64)
-    epsi = 0.05
+    epsi = 0.04
     miu = 50 
     order, prefs = dish(data, epsi, miu)
     print("Cluster Order", order)
