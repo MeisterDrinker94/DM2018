@@ -251,7 +251,7 @@ def extractCluster(clusterOrder,preferences, data, epsi):
     # To simplify updating the cluster center, we only store the sum of the points
     # in the cluster for now. Division by the number of points yields the cluster center.
     clusters = []
-    clusters.append([[clusterOrder[0]],preferences[0],data[clusterOrder[0],:]])
+    clusters.append([[clusterOrder[0]],preferences[clusterOrder[0]],data[clusterOrder[0],:]])
 
     for i in range(1,len(clusterOrder)):
         oIdx = clusterOrder[i]
@@ -316,9 +316,10 @@ def testDish():
 #                     [1.3,  3.0],
 #                     [1.2,  3.1]])
 #    data = createSynthetic(noisePoints=0)
-    data = np.array([[0,0,0],
-                    [0.25,0,0],
+    data = np.array([
                     [0.5,0,0],
+                    [0,0,0],
+                    [0.25,0,0],
                     [0,1,1],
                     [.5,1,1],
                     [1,1,1]])
