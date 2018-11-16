@@ -251,7 +251,8 @@ def extractCluster(clusterOrder,preferences, data, epsi):
     # To simplify updating the cluster center, we only store the sum of the points
     # in the cluster for now. Division by the number of points yields the cluster center.
     clusters = []
-    clusters.append([[clusterOrder[0]],preferences[clusterOrder[0]],data[clusterOrder[0],:]])
+    oIdx = clusterOrder[0]
+    clusters.append([[oIdx],preferences[oIdx],data[oIdx,:]])
 
     for i in range(1,len(clusterOrder)):
         oIdx = clusterOrder[i]
@@ -315,24 +316,25 @@ def testDish():
 #                     [0.0,  3.5],
 #                     [1.3,  3.0],
 #                     [1.2,  3.1]])
-#    data = createSynthetic(noisePoints=0)
-    data = np.array([
-                    [0.5,0,0],
-                    [0,0,0],
-                    [0.25,0,0],
-                    [0,1,1],
-                    [.5,1,1],
-                    [1,1,1]])
+    data = createSynthetic(noisePoints=0)
+#    data = np.array([
+#                    [0.5,0,0],
+#                    [0,0,0],
+#                    [0.25,0,0],
+#                    [0,1,1],
+#                    [.5,1,1],
+#                    [1,1,1]])
 #    data = [];
 #    with open('breast-cancer-wisconsin.data', 'r') as csvfile:
 #        reader = csv.reader(csvfile, delimiter=',')
 #        for row in reader:
 #            data.append(row[1:])
 #    data = np.array(data, dtype=np.float64)
-    epsi = 0.3
-    miu = 3 
+    epsi = 0.05
+    miu = 50 
     order, prefs = dish(data, epsi, miu)
     print("Cluster Order", order)
+    print("Preferences", prefs)
     clusters = extractCluster(order,prefs,data,epsi)
     hierarchy = buildHierarchy(clusters, epsi)
     #print("parentDict:", hierarchy)

@@ -20,8 +20,8 @@ def createSynthetic(clusterPoints=300,noisePoints=150,x=0.2,y=0.8):
     
     for ar in helper:
         data.append([x,ar[0],ar[1]])
-        data.append([ar[2],y,ar[3]])
-        data.append([x,y,ar[4]])
+        #data.append([ar[2],y,ar[3]])
+        #data.append([x,y,ar[4]])
     
     noise = np.random.rand(noisePoints,3)
     
