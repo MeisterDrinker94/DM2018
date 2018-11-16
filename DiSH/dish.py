@@ -316,7 +316,7 @@ def testDish():
 #                     [0.0,  3.5],
 #                     [1.3,  3.0],
 #                     [1.2,  3.1]])
-    data = createSynthetic(noisePoints=50)
+#    data = createSynthetic()
 #    data = np.array([
 #                    [0.5,0,0],
 #                    [0,0,0],
@@ -324,20 +324,20 @@ def testDish():
 #                    [0,1,1],
 #                    [.5,1,1],
 #                    [1,1,1]])
-#    data = [];
-#    with open('breast-cancer-wisconsin.data', 'r') as csvfile:
-#        reader = csv.reader(csvfile, delimiter=',')
-#        for row in reader:
-#            data.append(row[1:])
-#    data = np.array(data, dtype=np.float64)
-    epsi = 0.04
+    data = [];
+    with open('synthetic.csv', 'r') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
+        for row in reader:
+            data.append(row[:])
+    data = np.array(data, dtype=np.float64)
+    epsi = 0.01
     miu = 50 
     order, prefs = dish(data, epsi, miu)
-    print("Cluster Order", order)
-    print("Preferences", prefs)
+    #print("Cluster Order", order)
+    #print("Preferences", prefs)
     clusters = extractCluster(order,prefs,data,epsi)
     hierarchy = buildHierarchy(clusters, epsi)
-    #print("parentDict:", hierarchy)
+    print("parentDict:", hierarchy)
     print("len(parentDict):", len(hierarchy))
     print("len(clusters):", len(clusters))
     #print("clusters:", clusters)
@@ -352,9 +352,7 @@ def plotData(clusters, Data):
     
     col = -1
     for c in clusters:
-        col = col + 1
-        if col == 5:
-            break
+        col = (col + 1)%len(markerStyle)
         for dindex in c[0]:
             ax.scatter(Data[dindex,0],Data[dindex,1],Data[dindex,2], color=markerStyle[col])
     plt.xlabel("x-label")
