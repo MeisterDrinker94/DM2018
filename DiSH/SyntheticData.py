@@ -1,3 +1,4 @@
+import csv
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -20,7 +21,7 @@ def createSynthetic(clusterPoints=300,noisePoints=150,x=0.2,y=0.8):
     
     for ar in helper:
         data.append([x,ar[0],ar[1]])
-        #data.append([ar[2],y,ar[3]])
+        data.append([ar[2],y,ar[3]])
         #data.append([x,y,ar[4]])
     
     noise = np.random.rand(noisePoints,3)
@@ -39,6 +40,11 @@ def main():
     
     ax.scatter3D(d[:,0],d[:,1],d[:,2])
     plt.show()
+
+    with open('synthetic.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',')
+        for i in range(0, d.shape[0]):
+            writer.writerow(d[i,:])
         
         
 if __name__ == '__main__':
