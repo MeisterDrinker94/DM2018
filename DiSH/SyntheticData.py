@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-def createSynthetic(clusterPoints=300,noisePoints=150,x=0.2,y=0.8):
+def createSynthetic(clusterPoints=300,oneDClusterPoint = 40,noisePoints=150,x=0.2,y=0.8):
     """    
         clusterPoints = number of Points in Clusters
         noisePoints = number of noise points
@@ -24,6 +24,11 @@ def createSynthetic(clusterPoints=300,noisePoints=150,x=0.2,y=0.8):
         data.append([ar[2],y,ar[3]])
         #data.append([x,y,ar[4]])
     
+    oneDCluster = np.random.rand(oneDClusterPoint,1)
+    
+    for d in oneDCluster:
+        data.append([x,y,d])	
+
     noise = np.random.rand(noisePoints,3)
     
     for ar in noise:
