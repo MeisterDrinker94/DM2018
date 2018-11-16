@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-def createSynthetic(clusterPoints=300,oneDClusterPoint = 40,noisePoints=150,x=0.2,y=0.8):
+def createSynthetic(clusterPoints=300,oneDClusterPoint = 40,noisePoints=50,x=0.2,y=0.8):
     """    
         clusterPoints = number of Points in Clusters
         noisePoints = number of noise points
@@ -37,7 +37,7 @@ def createSynthetic(clusterPoints=300,oneDClusterPoint = 40,noisePoints=150,x=0.
     return np.array(data)
         
 def main():
-    d = createSynthetic(300, 40,150,0.5,0.2)
+    d = createSynthetic()
     
     fig = plt.figure()
     
