@@ -1,0 +1,11 @@
+To run DiSH on a sample data set, execute dish.py using Python 3.
+
+We used the following packages:
+- numpy
+- matplotlib
+
+dish.py contains all code related to the implementation of DiSH.
+
+We tested our algorithm on two data sets:
+ - The synthetic data set synthetic.csv is created by SyntheticData.py
+ - The wages data set from http://lib.stat.cmu.edu/datasets/CPS_85_Wages

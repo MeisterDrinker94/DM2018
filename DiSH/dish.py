@@ -2,7 +2,6 @@ import csv
 from heapq import heappush, heappop, heapify
 import math
 import numpy as np
-from SyntheticData import createSynthetic
 import sys
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
@@ -311,20 +310,20 @@ def buildHierarchy(clusters, epsi):
 
 
 def testDish():
-#   #First trivial test data
-#    data = np.array([[1.0,  3.0, 0],
-#                     [1.5,  0.0, 0],
-#                     [0.0,  3.5, 0],
-#                     [1.3,  3.0, 0],
-#                     [1.2,  3.1, 0]])
+#    #First trivial test data
+#    data = np.array([[1.0,  3.0, 0.0],
+#                     [1.5,  0.0, 0.0],
+#                     [0.0,  3.5, 0.0],
+#                     [1.3,  3.0, 0.0],
+#                     [1.2,  3.1, 0.0]])
 #    #Second trivial test data   
 #    data = np.array([
-#                    [0.5,0,0],
-#                    [0,0,0],
-#                    [0.25,0,0],
-#                    [0,1,1],
-#                    [.5,1,1],
-#                    [1,1,1]])
+#                    [0.5 , 0.0, 0.0],
+#                    [0.0 , 0.0, 0.0],
+#                    [0.25, 0.0, 0.0],
+#                    [0.0 , 1.0, 1.0],
+#                    [0.5 , 1.0, 1.0],
+#                    [1.0 , 1.0, 1.0]])
 
     
     #Open the synthetic dataset and save as an np array
@@ -371,20 +370,3 @@ def main():
 if __name__ == '__main__':
     main()
 
-"""
-algorithm DiSH(D, m, e):
-    co <- cluster order     # initially empty
-    pq <- priority queue ordered by ReachDist
-    for p in D:
-        compute w(p)        # Frequent itemset mining (algorithm on page 5)
-        p.ReachDist <- infinity
-        insert p into pq
-    while pq not empty:
-        o <- pq.pop()
-        r <- m-NN of o w.r.t. SDist
-        for p in pq:
-            new_sr <- ReachDist(o,p,r)
-            pq.update(p, new_sr)
-        append o to co
-    return co
-"""
