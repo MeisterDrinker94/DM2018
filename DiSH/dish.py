@@ -311,12 +311,13 @@ def buildHierarchy(clusters, epsi):
 
 
 def testDish():
-#    data = np.array([[1.0,  3.0],
-#                     [1.5,  0.0],
-#                     [0.0,  3.5],
-#                     [1.3,  3.0],
-#                     [1.2,  3.1]])
-#    data = createSynthetic()
+#   #First trivial test data
+#    data = np.array([[1.0,  3.0, 0],
+#                     [1.5,  0.0, 0],
+#                     [0.0,  3.5, 0],
+#                     [1.3,  3.0, 0],
+#                     [1.2,  3.1, 0]])
+#    #Second trivial test data   
 #    data = np.array([
 #                    [0.5,0,0],
 #                    [0,0,0],
@@ -324,23 +325,28 @@ def testDish():
 #                    [0,1,1],
 #                    [.5,1,1],
 #                    [1,1,1]])
+
+    
+    #Open the synthetic dataset and save as an np array
     data = [];
     with open('synthetic.csv', 'r') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
         for row in reader:
             data.append(row[:])
     data = np.array(data, dtype=np.float64)
+    
+    #set miu and epsilon
     epsi = 0.01
     miu = 50 
+    
+    #Extract Clusterorder and the preference vectors in form of a matrix
     order, prefs = dish(data, epsi, miu)
-    #print("Cluster Order", order)
-    #print("Preferences", prefs)
+    
+    #Extract the clusters and build the hierarchy
     clusters = extractCluster(order,prefs,data,epsi)
     hierarchy = buildHierarchy(clusters, epsi)
-    print("parentDict:", hierarchy)
-    print("len(parentDict):", len(hierarchy))
-    print("len(clusters):", len(clusters))
-    #print("clusters:", clusters)
+    
+    #Plot the final Data with visualized Clusters
     plotData(clusters,data)
 
 def plotData(clusters, Data):
