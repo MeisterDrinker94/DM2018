@@ -1,0 +1,64 @@
+---
+title: "Trip Visualization"
+author: "Wolfgang Ost"
+date: "10 Dezember 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+```{r}
+tname <- "862550039968582_20181206-183254"
+data <- read.csv(paste(tname, "/", tname, "_sensor.csv", sep=""), header=TRUE, sep=",")
+select <- which(data$sensor == "acceleration")
+data <- data[select,]
+```
+
+```{r}
+norm2 <- function(x, y, z) {
+  sqrt(x^2+y^2+z^2)
+}
+```
+
+```{r}
+duration <- 60000
+select <- which(data$time < duration + data$time[1])
+dataAcc <- data[select,]
+dataAcc$norm <- norm2(dataAcc$x, dataAcc$y, dataAcc$z)
+dataAcc$time <- (dataAcc$time - dataAcc$time[1])/1000/60
+plt1 <- ggplot(data=dataAcc) +
+          geom_line(aes(x=time, y=x, color="x")) +
+          geom_line(aes(x=time, y=y, color="y")) +
+          geom_line(aes(x=time, y=z, color="z")) +
+          xlab("time/min") +
+          ylab("acceleration")
+plot(plt1)
+```
+
+```{r}
+dataFFT <- dataAcc
+samplingFreq <- 1000/duration
+dataFFT$freq <- seq(0, length(dataFFT$time)-1)*samplingFreq/length(dataFFT$time)
+dataFFT$x <- abs(fft(dataFFT$x))^2
+dataFFT$x <- dataFFT$x/max(dataFFT$x)
+dataFFT$y <- abs(fft(dataFFT$y))^2
+dataFFT$y <- dataFFT$y/max(dataFFT$y)
+dataFFT$z <- abs(fft(dataFFT$z))^2
+dataFFT$z <- dataFFT$z/max(dataFFT$z)
+dataFFT$norm <- norm2(dataFFT$x, dataFFT$y, dataFFT$z)
+```
+
+```{r}
+plt1 <- ggplot(data=dataFFT[2:length(dataFFT$time)/2,]) +
+          geom_line(aes(x=freq, y=x, color="x")) +
+          geom_line(aes(x=freq, y=y, color="y")) +
+          geom_line(aes(x=freq, y=z, color="z")) +
+          scale_y_log10() +
+          scale_x_log10() +
+          xlab("frequency") +
+          ylab("acceleration")
+plot(plt1)
+```
