@@ -97,7 +97,7 @@ def get_filelist(dir, key):
             
     return l
 
-def fast_fourier_transform(df, key, n_recon = 50):
+def fast_fourier_transform(df, key, n_recon = 30):
     """
     Get and visualize Fourier Transform
     key in {"x-acceleration","y-acceleration","z-acceleration","total-acceleration"}
@@ -110,16 +110,13 @@ def fast_fourier_transform(df, key, n_recon = 50):
     plt.figure(1)
     plt.subplot(211)
     plt.plot(freq, Spektrum.real)
-    plt.xscale('log')
+    #plt.xscale('log')
     plt.yscale('log')
     
     plt.subplot(212)
     plt.plot(freq, Spektrum.imag, 'r')
-    plt.xscale('log')
+    #plt.xscale('log')
     plt.yscale('log')
-    
-    spek_freq = zip(Spektrum,freq) 
-    spek_freq.sort(reverse=True)
     
     #amplying inverse of fourier
     #TODO: Scaling of Signal after reconstruction
@@ -136,19 +133,20 @@ word = "sensor.csv"
 #get List of all relevant filenames
 filenames = get_filelist(directory_name,word)
 
-fname = filenames[2]
+fname = filenames[5]
 
 #read in the dataframe
 sensordata = pd.read_csv(fname)
-sensordata.head()
+sensordata.head(15)
 
 #describe the dataframe
 sensordata.describe()
 
 #erase duplictes 
+sensordata = sensordata[sensordata['sensor']=="acceleration"]
 sensordata.drop_duplicates("time", inplace=True)
 
 acceleration = interpolate_accelearation(sensordata)
 
-acceleration.plot(x="time",y="y-acceleration")
-fast_fourier_transform(acceleration, 'y-acceleration')
+acceleration.plot(x="time",y="total-acceleration")
+fast_fourier_transform(acceleration, 'total-acceleration',50)
