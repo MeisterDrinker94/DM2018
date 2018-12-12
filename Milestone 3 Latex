@@ -1,0 +1,106 @@
+
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{array}
+\usepackage{booktabs}	% for horizontal lines
+
+
+\title{Data Mining Milestone 3 WS18}
+\author{von Kirchbach Konrad Rüdiger Johannes \\
+		Novakivic Donatella \\
+		Ost Wolfgang Martin \\
+		Weber Jakob \\
+		}
+
+
+\begin{document}
+\maketitle
+
+Acceleration data was collected for the following three modes:
+\begin{itemize}
+	\item Metro
+	\item Walk
+	\item Train
+\end{itemize}
+
+ 
+The smartphone acceleration data was downloaded from the website with the slightly modified, provided R code. First visualizations of raw data were done using R / Python. Some of these visualizations are show below. For the sake of brevity, only one plot per transport mode is shown. 
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=1\textwidth, height=0.3\textheight]{../metro_xyz.png}
+		\caption{Scripted Metro Trip}
+		\label{Metro}	
+	\end{center}
+\end{figure}
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=1\textwidth,height=0.3\textheight]{../walk_xyz.png}
+		\caption{Scripted Walk Trip}
+		\label{Walk}
+	\end{center}
+\end{figure}
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=1\textwidth,height=0.3\textheight]{../train_xyz.png}
+		\caption{Scripted Train Trip}
+		\label{Train}
+	\end{center}
+\end{figure}
+
+In Figure \ref{Metro} some periodic acceleration behaviour is visible, which qualitativly corresponds to the metro train accelerating and staying in the station. 
+In Figure \ref{Walk} a moment of nearly zero acceleration is visible, which can correspond to some stand still at a trafic light. 
+The train trip in Figure \ref{Train} is hard to interpret if only the raw data is taken into account, but the effect of smartphone movement during the start and the end of the trip is visible.
+\pagebreak
+
+For the further preprocessing of the datasets, python was chosen. The data was loaded using pandas $read\_csv()$ function. As first step, all duplicated time steps were eliminated. Next, the obervations were interpolated at equidistant time stamps and a piecewise aggregate approximation was carried out.
+
+From now on, the data from one scripted metro trip will be take as example. The data now shows the following statistical parameters:
+\newline
+
+
+\begin{tabular}{|l|c|r|} 
+	\hline
+Parameter & after PAA  & before PAA	­\\ \toprule \hline 
+count &	16750		& 85317 	\\ \hline
+mean  &	-0.318326 	& -0.31715 	\\ \hline
+std	  &	2.350155 	&  2.46217 	\\ \hline
+min	  &	-14.473215  &-15.984 	\\ \hline
+25\%  &	-0.836296   & -0.87148 	\\ \hline
+50\%  &	0.235449    &  0.23942	\\ \hline
+75\%  &	0.946151    &  0.98641	\\ \hline
+max	  &	14.601607   & 36.621	\\ 
+\hline
+\end{tabular}
+
+\newline
+As additional step for the further analysis, the fast fourier transform of the data was taken. The idea behind this is to identify the main frequencies in the data. These can later be used as separating criteria in the clustering step or in possible classification try. The results are shown in Figure \ref{FFT}.
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=1\textwidth, height=0.3\textheight]{../FFT.png}
+		\caption{Fast fourier transform for the scripted metro trip. Blue - real part. Red - complex part}
+		\label{FFT}
+	\end{center}
+\end{figure}
+The FFT shows some main frequencys which can be used for further data analysis. 
+The reconstructed signal using the first 500 frequences is show below in comparision to the the original signal. 
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=1\textwidth, height=0.3\textheight]{../FFT_inv.png}
+		\caption{Comparison of signal and reconstructed signal using 500 frequencies}
+		\label{FFT}
+	\end{center}
+\end{figure}
+It is possible that the approach using Fast Fourier Transformation does not lead to any further useful insight. Nevertheless, trying different methods has never been a bad idea, so we will see in january if it was useful. 
+
+\end{document}
