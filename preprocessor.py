@@ -13,12 +13,48 @@ from matplotlib import pyplot as plt
 from math import sqrt,pi,exp, log
 import os
 import re
+import urllib
+
+def download_links(token, dest_dir):
+    url = "http://refdata:research@62.218.164.232/lva2019/" + token
+    url_list = []
+    
+    append_list = ["_annotation.csv", "_annotation_user.csv", "_location.csv", "_sensor.csv"]
+    
+    current_dir = os.getcwd()
+    
+    os.chdir(dest_dir)
+    
+    try:
+        url_file = urllib.urlopen(url)
+        url_text = url_file.read()
+        
+        matches = re.findall(token+'_\d*-\d*/', url_text)
+        if matches:
+            #print "Found Match!"
+            for match in matches:
+                #print match
+                url_list.append(url+"/"+match+match)
+    
+    except IOError:
+        print "Problem: ", IOError
+        
+    
+    #Get all the download links
+    for link in url_list:       
+        #Download the trips    
+        for append_word in append_list:
+            #Generate the links for downloading
+            print link[0:-1] + append_word
+            urllib.urlretrieve(link[0:-1] + append_word, link[-32:-1]+append_word)
+            
+    os.chdir(current_dir)
 
 def PAA(time,array):
     """
     Does a piecewise aggregate function on the array
     """
-    sum = 0
+    Sum = 0
     num_of_items = 0
     current_time = time[0]
     new_time = []
@@ -27,15 +63,15 @@ def PAA(time,array):
     for i in range(len(time)):
         #aggregate every 50 miliseconds
         if(time[i]-current_time > 50):
-            new_array.append(sum/num_of_items)
+            new_array.append(Sum/num_of_items)
             new_time.append(current_time + (time[i]-current_time)/2)
             
             current_time = time[i]
-            sum = 0
+            Sum = 0
             num_of_items = 0
             
         #do the average
-        sum += array[i]
+        Sum += array[i]
         num_of_items += 1
         
     return np.array(new_time),np.array(new_array)
@@ -126,14 +162,19 @@ def fast_fourier_transform(df, key, n_recon = 30):
     plt.plot(inv)
     
 
+#Token
+mytoken = "357810086663607"
+
 #Directory path to stored trips relative to working directory!!!
-directory_name = "../Trips/"
+directory_name = "/home/konrad/Documents/UniWien/WS18/Data Mining/Test/"
 word = "sensor.csv"
+
+download_links(mytoken, directory_name)
 
 #get List of all relevant filenames
 filenames = get_filelist(directory_name,word)
 
-fname = filenames[5]
+fname = filenames[2]
 
 #read in the dataframe
 sensordata = pd.read_csv(fname)
