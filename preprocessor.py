@@ -161,7 +161,46 @@ def fast_fourier_transform(df, key, n_recon = 30):
     plt.subplot(211)
     plt.plot(inv)
     
-
+def split_in_segments(df):
+    """
+        Splits the data frame in 30 seconds groups
+        returns a list that contains the DataFrames of 30 seconds
+    """
+    #list that holds 4 lists (x, y, z, n2) of 30s blocks
+    lst = []
+    
+    idx = 0
+    time = []
+    xlst = []
+    ylst = []
+    zlst = []
+    n2lst = []
+    
+    for i in range(len(df['time'])):
+        #check if a new 30s block must be created
+        if i - idx >= 600:
+            idx = i
+            
+            seg = np.array([time, xlst, ylst, zlst, n2lst]).transpose()
+            lst.append(pd.DataFrame(seg, columns = df.columns))
+            
+            time = []
+            xlst = []
+            ylst = []
+            zlst = []
+            n2lst = []
+            
+        #Current row of dataframe
+        row = df.iloc[i]
+        
+        time.append(row[0])
+        xlst.append(row[1])
+        ylst.append(row[2])
+        zlst.append(row[3])
+        n2lst.append(row[4])
+        
+    return lst
+        
 #Token
 mytoken = "357810086663607"
 
