@@ -115,6 +115,9 @@ def interpolate_accelearation(dframe):
     indices = range(len(time_range))
     
     df = pd.DataFrame(np.array([time_range,ax,ay,az,total]).transpose(), index = indices, columns = names)
+    
+    df['mode'] = dframe['mode']
+    df['notes'] = dframe['notes']
 
     return df
         
@@ -182,7 +185,10 @@ def split_in_segments(df):
             idx = i
             
             seg = np.array([time, xlst, ylst, zlst, n2lst]).transpose()
-            lst.append(pd.DataFrame(seg, columns = df.columns))
+            dframe = pd.DataFrame(seg, columns = df.columns[0:-2])
+            dframe['mode'] = df['mode']
+            dframe['notes'] = df['notes']
+            lst.append(dframe)
             
             time = []
             xlst = []
@@ -211,13 +217,20 @@ word = "sensor.csv"
 download_links(mytoken, directory_name)
 
 #get List of all relevant filenames
-filenames = get_filelist(directory_name,word)
+sensor_files = get_filelist(directory_name,"sensor.csv")
+annotations_names = get_filelist(directory_name,"annotation.csv")
 
-fname = filenames[2]
+index = 3
+
+sensor = sensor_files[index]
+annotation = annotations_names[index]
 
 #read in the dataframe
-sensordata = pd.read_csv(fname)
-sensordata.head(15)
+sensordata = pd.read_csv(sensor)
+annotationdata = pd.read_csv(annotation)
+
+sensordata['mode'] = annotationdata['mode'][0]
+sensordata['notes'] = annotationdata['notes'][0]
 
 #describe the dataframe
 sensordata.describe()
