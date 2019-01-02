@@ -207,6 +207,86 @@ def split_in_segments(df):
         
     return lst
         
+# added by Jakob
+
+def generateDataFrame(path, length=30):
+    """ 
+    generates the DataFrame with all data split into segments of length
+ 
+    Parameters:
+    ---------------
+    path    : str   - path to directory where all the files are saved
+    length  : int   - length of the data segments in seconds
+ 
+    Returns:
+    --------------
+    df        : DataFrame, shape=[ NoSegments times n , n+2]
+ 
+    """
+ 
+    n = length * 20
+    key1 = 'sensor.csv'
+    key2 = 'annotation.csv'
+    key3 = 'location.csv'
+ 
+    sensor, anno, loc = get_filelist(path, key1), get_filelist(path, key2), get_filelist(path, key3)
+    print('Number of recorded Trips: ', len(sensor))
+    print('------------------------')
+ 
+    colNames = list(np.arange(n+2))
+    colNames[-1] = 'notes'
+    colNames[-2] = 'mode'   
+    df = pd.DataFrame(columns=colNames)
+ 
+    idx = 0
+    for i in range(len(sensor)):
+        # iterate over all trips: 
+        #   read acceleration and annotation data, drop unused data, interpolate to equidistant timestamps
+        print('Reading data from Trip ', i+1)
+        sd = pd.read_csv(sensor[i])
+        ad = pd.read_csv(anno[i])
+        print('Details: \t Mode :', ad['mode'][0], '\t Notes :', ad['notes'][0])
+        print('Processing current data')
+        sd = sd[sd['sensor']=="acceleration"]
+        sd.drop_duplicates("time", inplace=True)
+        print('Interpolate acceleration data')
+        acc = interpolate_acc(sd)
+ 
+        print('Length of current Trip: ', len(acc))
+        segments = int(len(acc)/n)
+        print('Number of segemts for current Trip: ',segments)
+        print('-------------------------')
+ 
+        for j in range(segments):
+            # iterate over all segments, sparate the acceleration data and save it into a pd.DataFrame
+            x_acc = list(acc['x-acceleration'][n*j:n*(j+1)])
+            x_acc.append(ad['mode'][0])
+            x_acc.append(ad['notes'][0]) 
+            df.loc[idx] = x_acc
+ 
+            y_acc = list(acc['y-acceleration'][n*j:n*(j+1)])
+            y_acc.append(ad['mode'][0])            
+            y_acc.append(ad['notes'][0])
+            df.loc[idx+1] = y_acc
+ 
+            z_acc = list(acc['z-acceleration'][n*j:n*(j+1)])
+            z_acc.append(ad['mode'][0])            
+            z_acc.append(ad['notes'][0]) 
+            df.loc[idx+2] = z_acc
+ 
+            tot_acc = list(acc['total-acceleration'][n*j:n*(j+1)])            
+            tot_acc.append(ad['mode'][0]) 
+            tot_acc.append(ad['notes'][0])     
+            df.loc[idx+3] = tot_acc            
+ 
+            idx += 4
+ 
+ 
+    print('Total number of rows of the new DataFrame: ',idx)
+ 
+    return df 
+    
+    
 #Token
 mytoken = "357810086663607"
 
